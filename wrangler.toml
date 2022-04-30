@@ -1,0 +1,16 @@
+name = "logger"
+type = "javascript"
+zone_id = ""
+account_id = ""
+route = ""
+workers_dev = true
+compatibility_date = "2022-04-30"
+
+kv_namespaces = [ 
+  { binding = "Logger", id = "953bc25038ae43b3836c5d45a97f8b36" }
+]
+
+[build]
+command = "npm install && npm run build"
+[build.upload]
+format = "service-worker"
