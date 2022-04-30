@@ -1,5 +1,9 @@
-import { handleRequest } from './handler'
+import { handleRequest, getNicePresentation } from './handler'
 
 addEventListener('fetch', (event) => {
-  event.respondWith(handleRequest(event.request))
+  if (event.request.method === 'GET') {
+    event.respondWith(getNicePresentation());
+  } else {
+    event.respondWith(handleRequest(event.request));
+  }
 })

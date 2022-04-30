@@ -23,6 +23,17 @@ export async function handleRequest(request: Request): Promise<Response> {
   return new Response(null, { status: 204 })
 }
 
+export async function getNicePresentation(): Promise<Response> {
+  let cursor: string | undefined, list, responseString = "";
+  while (!list?.list_complete) {
+    list = await Logger.list({ cursor });
+    responseString += list.keys.map(item => item.metadata ? item.metadata : "<No metadata provided>").join("\n");
+    responseString += "\n";
+    cursor = list.cursor;
+  }
+  return new Response(responseString, { status: 200 });
+}
+
 async function validate(req: Request): Promise<Response | CheckedRequest> {
   if (req.method !== 'POST') {
     return new Response('only POST request are supported', { status: 405 })
@@ -73,7 +84,7 @@ async function log(level: Level, tag: string, msg: string, stacktrace?: string |
     const count = _count ? parseInt(_count) : 0;
 
     const date = new Date();
-    await Logger.put("count", (count + 1).toString());
+    await Logger.put("count", (count + 1).toString(), { metadata: 'Counter: ' + (count + 1) });
     await Logger.put((count + 1).toString(), JSON.stringify({
       level,
       tag,
@@ -81,7 +92,7 @@ async function log(level: Level, tag: string, msg: string, stacktrace?: string |
       stacktrace,
       timestamp: date.valueOf(),
       full_message: `[${formatUTCDate(date)}] [${level.toUpperCase()}]: [${tag}] ${msg}`
-    }));
+    }), { metadata: `[${formatUTCDate(date)}] [${level.toUpperCase()}]: [${tag}] ${msg}` });
   } catch (error) {
     console.error(error);
   }
