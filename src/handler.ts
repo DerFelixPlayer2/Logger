@@ -17,9 +17,8 @@ export async function handleRequest(request: Request): Promise<Response> {
     return validity;
   }
 
-  await Logger.put("test", "value");
-
-  // TODO: log to kv
+  const { level, tag, msg } = validity;
+  await log(level, tag, msg);
 
   return new Response(null, { status: 204 })
 }
@@ -62,7 +61,32 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
     };
   } catch (error) {
     console.error(error);
-    // TODO: log error to kv
+    const msg = (error as Error)?.message || typeof error === 'string' ? error as string : "" || (error as any).toString();
+    await log("error", "LOGGER/validate", msg, (error as Error)?.stack);
     return new Response('request body is invalid', { status: 400 })
   }
+}
+
+async function log(level: Level, tag: string, msg: string, stacktrace?: string | undefined): Promise<void> {
+  try {
+    const _count = await Logger.get("count");
+    const count = _count ? parseInt(_count) : 0;
+
+    const date = new Date();
+    await Logger.put("count", (count + 1).toString());
+    await Logger.put((count + 1).toString(), JSON.stringify({
+      level,
+      tag,
+      msg,
+      stacktrace,
+      timestamp: date.valueOf(),
+      full_message: `[${formatUTCDate(date)}] [${level.toUpperCase()}]: [${tag}] ${msg}`
+    }));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function formatUTCDate(date: Date): string {
+  return `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
 }
