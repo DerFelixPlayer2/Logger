@@ -1,10 +1,9 @@
 name = "logger"
-type = "javascript"
-zone_id = ""
-account_id = ""
-route = ""
+#account_id = ""
+#route = ""
 workers_dev = true
-compatibility_date = "2022-04-30"
+compatibility_date = "2022-08-08"
+main = "src/index.ts"
 
 kv_namespaces = [ 
   { binding = "Logger", id = "953bc25038ae43b3836c5d45a97f8b36" }
@@ -12,5 +11,3 @@ kv_namespaces = [
 
 [build]
 command = "npm install && npm run build"
-[build.upload]
-format = "service-worker"
