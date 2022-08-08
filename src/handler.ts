@@ -80,12 +80,8 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
 
 async function log(level: Level, tag: string, msg: string, stacktrace?: string | undefined): Promise<void> {
   try {
-    const _count = await Logger.get("count");
-    const count = _count ? parseInt(_count) : 0;
-
     const date = new Date();
-    await Logger.put("count", (count + 1).toString(), { metadata: 'Counter: ' + (count + 1) });
-    await Logger.put((count + 1).toString(), JSON.stringify({
+    await Logger.put(date.valueOf().toString(), JSON.stringify({
       level,
       tag,
       msg,
