@@ -6,7 +6,7 @@ compatibility_date = "2022-08-08"
 main = "src/index.ts"
 
 kv_namespaces = [ 
-  { binding = "Logger", id = "953bc25038ae43b3836c5d45a97f8b36" }
+  { binding = "Logger", id = "f56e70cbf0b04a839eb209f4cde339e7" }
 ]
 
 [build]
