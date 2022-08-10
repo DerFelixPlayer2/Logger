@@ -36,7 +36,7 @@ export async function getNicePresentation(): Promise<Response> {
 
 async function validate(req: Request): Promise<Response | CheckedRequest> {
   if (req.method !== 'POST') {
-    return new Response('only POST request are supported', { status: 405 })
+    return new Response('only POST request are supported', { status: 405, headers: { 'Allow': 'POST, GET' } });
   }
 
   if (!req.body) {
