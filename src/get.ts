@@ -31,6 +31,8 @@ export async function handleRequest(request: Request): Promise<Response> {
         msg: s[3].slice(1),
       });
     });
+
+    entries.sort((a, b) => b.timeString.localeCompare(a.timeString));
   }
 
   return new Response(html(entries), { status: 200, headers: { "ETag": etag, "Cache-Control": "public, max-age=10000", "Content-Type": "text/html" } });
