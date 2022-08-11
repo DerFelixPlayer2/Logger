@@ -23,17 +23,6 @@ export async function handleRequest(request: Request): Promise<Response> {
   return new Response(null, { status: 204 })
 }
 
-export async function getNicePresentation(): Promise<Response> {
-  let cursor: string | undefined, list, responseString = "";
-  while (!list?.list_complete) {
-    list = await Logger.list({ cursor });
-    responseString += list.keys.map(item => item.metadata ? item.metadata : "<No metadata provided>").join("\n");
-    responseString += "\n";
-    cursor = list.cursor;
-  }
-  return new Response(responseString, { status: 200 });
-}
-
 async function validate(req: Request): Promise<Response | CheckedRequest> {
   if (req.method !== 'POST') {
     return new Response('only POST request are supported', { status: 405, headers: { 'Allow': 'POST, GET' } });
