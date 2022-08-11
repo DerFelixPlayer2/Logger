@@ -69,6 +69,7 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
 async function log(level: Level, tag: string, msg: string, stacktrace?: string | undefined): Promise<void> {
   try {
     const date = new Date();
+    console.log(date)
     await Logger.put(date.valueOf().toString(), JSON.stringify({
       level,
       tag,
@@ -83,5 +84,12 @@ async function log(level: Level, tag: string, msg: string, stacktrace?: string |
 }
 
 function formatUTCDate(date: Date): string {
-  return `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
+  let dstring = date.getUTCFullYear().toString() + '-';
+  dstring += (date.getUTCMonth() + 1).toString().padStart(2, '0') + '-';
+  dstring += date.getUTCDate().toString().padStart(2, '0') + ' ';
+  dstring += date.getUTCHours().toString().padStart(2, '0') + ':';
+  dstring += date.getUTCMinutes().toString().padStart(2, '0') + ':';
+  dstring += date.getUTCSeconds().toString().padStart(2, '0');
+
+  return dstring;
 }
