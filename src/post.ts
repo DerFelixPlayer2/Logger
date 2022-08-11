@@ -10,11 +10,7 @@ interface CheckedRequest {
   msg: string
 }
 
-let etag: string;
-const SECONDS_15 = 15 * 1000;
-
 export async function handleRequest(request: Request): Promise<Response> {
-
   const validity = await validate(request);
   if (validity instanceof Response) {
     return validity;
@@ -24,24 +20,6 @@ export async function handleRequest(request: Request): Promise<Response> {
   await log(level, tag, msg);
 
   return new Response(null, { status: 204 })
-}
-
-export async function getNicePresentation(request: Request): Promise<Response> {
-  if (etag && (Date.now() - SECONDS_15) < parseInt(etag.slice(1, etag.length - 1)) && request.headers.get('If-None-Match') === etag) {
-    return new Response(null, { status: 304 });
-  } else {
-    etag = `"${new Date().valueOf().toString()}"`;
-
-    let cursor: string | undefined, list, responseString = "";
-    while (!list?.list_complete) {
-      list = await Logger.list({ cursor });
-      responseString += list.keys.map(item => item.metadata ? item.metadata : "<No metadata provided>").join("\n");
-      responseString += "\n";
-      cursor = list.cursor;
-    }
-
-    return new Response(responseString, { status: 200, headers: { "ETag": etag, "Cache-Control": "public, max-age=15000" } });
-  }
 }
 
 async function validate(req: Request): Promise<Response | CheckedRequest> {
