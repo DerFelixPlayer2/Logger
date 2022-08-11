@@ -10,7 +10,8 @@ let etag: string | undefined;
 const SECONDS_10 = 10 * 1000;
 
 export async function handleRequest(request: Request): Promise<Response> {
-  if (etag && Date.now() - SECONDS_10 < parseInt(etag.slice(1, etag.length - 1)) && request.headers.get("If-None-Match") === etag) {
+  // last check because cloudflare keeps adding the weak thingy and idk why
+  if (etag && Date.now() - SECONDS_10 < parseInt(etag.slice(1, etag.length - 1)) && (request.headers.get("If-None-Match") === etag || request.headers.get("If-None-Match") === "W/" + etag)) {
     return new Response(null, { status: 304 });
   }
 
