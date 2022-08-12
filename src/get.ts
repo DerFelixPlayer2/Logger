@@ -4,6 +4,13 @@ type Entry = {
   tag: string;
   msg: string;
   timeString: string;
+  timestamp: number;
+}
+type REntry = {
+  level: Level;
+  tag: string;
+  msg: string;
+  timestamp: number;
 }
 
 let etag: string | undefined;
@@ -24,19 +31,25 @@ export async function handleRequest(request: Request): Promise<Response> {
     cursor = list.cursor;
 
     list.keys.forEach((v) => {
-      const s = (v.metadata as string).split("]");
-      entries.push({
-        timeString: s[0].slice(1),
-        level: s[1].slice(2) as Level,
-        tag: s[2].slice(3),
-        msg: s[3].slice(1),
-      });
+      const entry = v.metadata as REntry;
+      entries.push({ ...entry, timeString: formatUTCDate(new Date(entry.timestamp)) });
     });
 
-    entries.sort((a, b) => b.timeString.localeCompare(a.timeString));
+    entries.sort((a, b) => a.timestamp - b.timestamp);
   }
 
   return new Response(html(entries), { status: 200, headers: { "ETag": etag, "Cache-Control": "public, max-age=10000", "Content-Type": "text/html" } });
+}
+
+function formatUTCDate(date: Date): string {
+  let dstring = date.getUTCFullYear().toString() + '-';
+  dstring += (date.getUTCMonth() + 1).toString().padStart(2, '0') + '-';
+  dstring += date.getUTCDate().toString().padStart(2, '0') + ' ';
+  dstring += date.getUTCHours().toString().padStart(2, '0') + ':';
+  dstring += date.getUTCMinutes().toString().padStart(2, '0') + ':';
+  dstring += date.getUTCSeconds().toString().padStart(2, '0');
+
+  return dstring;
 }
 
 const html = (data: Entry[]) => `<!DOCTYPE html>

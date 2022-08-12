@@ -59,37 +59,29 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
       msg: body.msg as string
     };
   } catch (error) {
-    console.error(error);
     const msg = (error as Error)?.message || typeof error === 'string' ? error as string : "" || (error as any).toString();
-    await log("error", "LOGGER/validate", msg, (error as Error)?.stack);
+    await log("error", "LOGGER/validate", msg);
     return new Response('request body is invalid', { status: 400 })
   }
 }
 
-async function log(level: Level, tag: string, msg: string, stacktrace?: string | undefined): Promise<void> {
+async function log(level: Level, tag: string, msg: string): Promise<void> {
   try {
     const date = new Date();
-    console.log(date)
-    await Logger.put(date.valueOf().toString(), JSON.stringify({
-      level,
-      tag,
-      msg,
-      stacktrace,
-      timestamp: date.valueOf(),
-      full_message: `[${formatUTCDate(date)}] [${level.toUpperCase()}]: [${tag}] ${msg}`
-    }), { metadata: `[${formatUTCDate(date)}] [${level.toUpperCase()}]: [${tag}] ${msg}` });
+    await Logger.put(date.valueOf().toString(), JSON.stringify({ tag, msg }), {
+      metadata: {
+        level, tag: ellipsis(tag, 35), msg: ellipsis(msg, 130), timestamp: date.valueOf()
+      }
+    });
   } catch (error) {
     console.error(error);
   }
 }
 
-function formatUTCDate(date: Date): string {
-  let dstring = date.getUTCFullYear().toString() + '-';
-  dstring += (date.getUTCMonth() + 1).toString().padStart(2, '0') + '-';
-  dstring += date.getUTCDate().toString().padStart(2, '0') + ' ';
-  dstring += date.getUTCHours().toString().padStart(2, '0') + ':';
-  dstring += date.getUTCMinutes().toString().padStart(2, '0') + ':';
-  dstring += date.getUTCSeconds().toString().padStart(2, '0');
+function ellipsis(str: string, max: number): string {
+  if (str.length <= max) {
+    return str;
+  }
 
-  return dstring;
+  return str.substring(0, max) + '...';
 }
