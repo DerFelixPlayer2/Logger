@@ -35,7 +35,7 @@ export async function handleRequest(request: Request): Promise<Response> {
       entries.push({ ...entry, timeString: formatUTCDate(new Date(entry.timestamp)) });
     });
 
-    entries.sort((a, b) => a.timestamp - b.timestamp);
+    entries.sort((a, b) => b.timestamp - a.timestamp);
   }
 
   return new Response(html(entries), { status: 200, headers: { "ETag": etag, "Cache-Control": "public, max-age=10000", "Content-Type": "text/html" } });
