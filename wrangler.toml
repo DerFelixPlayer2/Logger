@@ -1,6 +1,4 @@
 name = "logger"
-#account_id = ""
-#route = ""
 workers_dev = true
 compatibility_date = "2022-08-08"
 main = "src/index.ts"
