@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './build/index.ts',
   output: {
     filename: 'worker.js',
     path: path.join(__dirname, 'dist'),
