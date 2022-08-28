@@ -32,7 +32,13 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
   }
 
   try {
-    const body: UncheckedRequest | null = await req.json();
+    let bodyString = "";
+    const decoder = new TextDecoder();
+    await chunkStream(req.body, 8192, (chunk, chunkSize) => {
+      bodyString += decoder.decode(chunk.subarray(0, chunkSize));
+    });
+    const body = JSON.parse(bodyString) as UncheckedRequest;
+
     if (!body) {
       return new Response('request body is empty', { status: 400 })
     }
@@ -59,7 +65,7 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
       msg: body.msg as string
     };
   } catch (error) {
-    const msg = (error as Error)?.message || typeof error === 'string' ? error as string : "" || (error as any).toString();
+    const msg = (error as Error)?.message || typeof error === 'string' ? error as string : "" || (error as any).toString() || "";
     await log("error", "LOGGER/validate", msg);
     return new Response('request body is invalid', { status: 400 })
   }
@@ -84,4 +90,22 @@ function ellipsis(str: string, max: number): string {
   }
 
   return str.substring(0, max) + '...';
+}
+
+async function chunkStream(stream: ReadableStream, CHUNK_SIZE: number, callback: (chunk: Uint8Array, chunkSize: number) => void) {
+  const reader = stream.getReader();
+  const chunk = new Uint8Array(CHUNK_SIZE);
+  let result: ReadableStreamReaderReadResult, chunkIndex = 0;
+
+  do {
+    result = await reader.read();
+    if (result.value) {
+      chunk.set(result.value, chunkIndex);
+      chunkIndex += result.value.length;
+    }
+    if (result.done || chunkIndex === CHUNK_SIZE) {
+      callback(chunk, chunkIndex);
+      chunkIndex = 0;
+    }
+  } while (!result.done);
 }

@@ -1,10 +1,10 @@
 name = "logger"
 workers_dev = true
-compatibility_date = "2022-08-08"
+compatibility_date = "2022-08-28"
 main = "build/index.ts"
 
 kv_namespaces = [ 
-  { binding = "Logger", id = "f56e70cbf0b04a839eb209f4cde339e7" }
+  { binding = "Logger", id = "f56e70cbf0b04a839eb209f4cde339e7", preview_id = "6cf19026fc4b460eb21de397b269f01d" }
 ]
 
 [build]
