@@ -4,43 +4,177 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto"
+    />
     <title>Log</title>
   </head>
   <body>
-    <section id="log">
-      <div class="row header">
-        <div class="header-time-wrapper">
-          <p class="header-time">Timestamp</p>
+    <main>
+      <section id="sort">
+        <div class="level">
+          <button
+            type="button"
+            id="btn-debug"
+            class="btn"
+            onclick="toggle('debug');"
+          >
+            DEBUG
+          </button>
+          <button
+            type="button"
+            id="btn-info"
+            class="btn"
+            onclick="toggle('info');"
+          >
+            INFO
+          </button>
+          <button
+            type="button"
+            id="btn-warn"
+            class="btn"
+            onclick="toggle('warn');"
+          >
+            WARN
+          </button>
+          <button
+            type="button"
+            id="btn-error"
+            class="btn"
+            onclick="toggle('error');"
+          >
+            ERROR
+          </button>
+          <button
+            type="button"
+            id="btn-fatal"
+            class="btn"
+            onclick="toggle('fatal');"
+          >
+            FATAL
+          </button>
         </div>
-        <div class="header-tag-wrapper">
-          <p class="header-tag">Tag</p>
+        <div class="date"></div>
+      </section>
+      <section id="log">
+        <div class="row header">
+          <div class="time-wrapper">
+            <p class="header-element">Timestamp</p>
+          </div>
+          <div class="tag-wrapper">
+            <p class="header-element">Tag</p>
+          </div>
+          <div class="type-wrapper">
+            <p class="header-element">Type</p>
+          </div>
+          <div class="msg-wrapper">
+            <p class="header-element">Message</p>
+          </div>
         </div>
-        <div class="header-type-wrapper">
-          <p class="header-type">Type</p>
-        </div>
-        <div class="header-msg-wrapper">
-          <p class="header-msg">Message</p>
-        </div>
-      </div>
-    </section>
+      </section>
+    </main>
   </body>
   <script>
+    let types = ['debug', 'info', 'warn', 'error', 'fatal']
+    let showDebug = false,
+      showInfo = false,
+      showWarn = false,
+      showError = false,
+      showFatal = false
     const data = []
 
     const log = document.getElementById('log')
     data.forEach((v) => {
       const div = document.createElement('div')
       div.innerHTML = `
-        <div class="time-wrapper"><p class="time">${v.timeString}</p></div>
-        <div class="tag-wrapper"><p class="tag">${v.tag}</p></div>
-        <div class="type-wrapper1"><div class="type-wrapper2 ${v.level.toLowerCase()}"><p class="type">${
+            <div class="time-wrapper"><p class="time">${v.timeString}</p></div>
+            <div class="tag-wrapper"><p class="tag">${v.tag}</p></div>
+            <div class="type-wrapper"><div class="type-wrapper2 ${v.level.toLowerCase()}"><p class="type">${
         v.level
       }</p></div></div>
-        <div class="msg-wrapper"><p class="msg">${v.msg}</p></div>
-      `
-      div.classList.add('row')
+            <div class="msg-wrapper"><p class="msg">${v.msg}</p></div>
+          `
+      div.classList.add('row', 'row-' + v.level.toLowerCase())
       log.appendChild(div)
     })
+
+    function toggle(type) {
+      if (allDisabled() || allDisabledAfter(type))
+        _toggle(...types.filter((v) => v !== type))
+      else _toggle(type)
+      toggleShow(type)
+      toggleButton(type)
+    }
+
+    function _toggle(...type) {
+      for (const t of type) {
+        Array.from(
+          document.getElementById('log').getElementsByClassName('row-' + t)
+        ).forEach((v, i) => {
+          v.classList.toggle('hide')
+        })
+      }
+    }
+
+    function toggleShow(type) {
+      switch (type) {
+        case 'debug':
+          showDebug = !showDebug
+          break
+        case 'info':
+          showInfo = !showInfo
+          break
+        case 'warn':
+          showWarn = !showWarn
+          break
+        case 'error':
+          showError = !showError
+          break
+        case 'fatal':
+          showFatal = !showFatal
+          break
+      }
+    }
+
+    function toggleButton(type) {
+      switch (type) {
+        case 'debug':
+          document.getElementById('btn-debug').classList.toggle('active')
+          break
+        case 'info':
+          document.getElementById('btn-info').classList.toggle('active')
+          break
+        case 'warn':
+          document.getElementById('btn-warn').classList.toggle('active')
+          break
+        case 'error':
+          document.getElementById('btn-error').classList.toggle('active')
+          break
+        case 'fatal':
+          document.getElementById('btn-fatal').classList.toggle('active')
+          break
+      }
+    }
+
+    function allDisabled() {
+      return !showDebug && !showInfo && !showWarn && !showError && !showFatal
+    }
+
+    function allDisabledAfter(type) {
+      switch (type) {
+        case 'debug':
+          return showDebug && !showInfo && !showWarn && !showError && !showFatal
+        case 'info':
+          return !showDebug && showInfo && !showWarn && !showError && !showFatal
+        case 'warn':
+          return !showDebug && !showInfo && showWarn && !showError && !showFatal
+        case 'error':
+          return !showDebug && !showInfo && !showWarn && showError && !showFatal
+        case 'fatal':
+          return !showDebug && !showInfo && !showWarn && !showError && showFatal
+      }
+    }
   </script>
   <style>
     :root {
@@ -49,6 +183,8 @@
       --c-header-background: #666;
       --c-text-header: var(--c-background);
       --c-text-entry: var(--c-header-background);
+
+      --c-btn-active: #aaa;
 
       --c-t-debug: rgb(142, 140, 140);
       --c-t-info: rgb(107, 181, 181);
@@ -62,7 +198,44 @@
       height: 100%;
 
       background-color: var(--c-background);
+      font-family: 'Roboto', sans-serif, serif;
       font-size: 17px;
+    }
+
+    #sort {
+      width: 100%;
+
+      margin-top: 2rem;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .level {
+      width: 50%;
+
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .btn {
+      border-radius: 0px;
+      border-width: 0px;
+      padding: 5px 14px;
+
+      font-size: large;
+    }
+
+    .active {
+      background-color: var(--c-btn-active);
+    }
+
+    .date {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
     }
 
     #log {
@@ -70,6 +243,7 @@
       width: inherit;
 
       margin: 1rem;
+      margin-top: 1.5rem;
 
       display: flex;
       flex-direction: column;
@@ -101,7 +275,7 @@
       flex-basis: 20%;
     }
 
-    .type-wrapper1 {
+    .type-wrapper {
       flex-basis: 13%;
     }
 
@@ -117,35 +291,7 @@
       flex-basis: 50%;
     }
 
-    .header-time-wrapper {
-      flex-basis: 17%;
-    }
-
-    .header-tag-wrapper {
-      flex-basis: 20%;
-    }
-
-    .header-type-wrapper {
-      flex-basis: 13%;
-    }
-
-    .header-msg-wrapper {
-      flex-basis: 50%;
-    }
-
-    .header-time {
-      color: var(--c-text-header);
-    }
-
-    .header-tag {
-      color: var(--c-text-header);
-    }
-
-    .header-type {
-      color: var(--c-text-header);
-    }
-
-    .header-msg {
+    .header-element {
       color: var(--c-text-header);
     }
 
@@ -189,6 +335,10 @@
 
     .fatal {
       background-color: var(--c-t-fatal);
+    }
+
+    .hide {
+      display: none !important;
     }
   </style>
 </html>
