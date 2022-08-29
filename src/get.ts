@@ -53,5 +53,5 @@ function formatUTCDate(date: Date): string {
 }
 
 const html = (data: Entry[]): string => {
-  return "INSERT HTML HERE".replace("const data = []", `const data = ${JSON.stringify(data)}`);
+  return "INSERT HTML HERE".replace("var data = []", `var data = ${JSON.stringify(data)}`);
 }

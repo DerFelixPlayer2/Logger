@@ -14,48 +14,16 @@
     <main>
       <section id="sort">
         <div class="level">
-          <button
-            type="button"
-            id="btn-debug"
-            class="btn"
-            onclick="toggle('debug');"
-          >
-            DEBUG
-          </button>
-          <button
-            type="button"
-            id="btn-info"
-            class="btn"
-            onclick="toggle('info');"
-          >
-            INFO
-          </button>
-          <button
-            type="button"
-            id="btn-warn"
-            class="btn"
-            onclick="toggle('warn');"
-          >
-            WARN
-          </button>
-          <button
-            type="button"
-            id="btn-error"
-            class="btn"
-            onclick="toggle('error');"
-          >
-            ERROR
-          </button>
-          <button
-            type="button"
-            id="btn-fatal"
-            class="btn"
-            onclick="toggle('fatal');"
-          >
-            FATAL
-          </button>
+          <button type="button" id="btn-debug" class="btn">DEBUG</button>
+          <button type="button" id="btn-info" class="btn">INFO</button>
+          <button type="button" id="btn-warn" class="btn">WARN</button>
+          <button type="button" id="btn-error" class="btn">ERROR</button>
+          <button type="button" id="btn-fatal" class="btn">FATAL</button>
         </div>
-        <div class="date"></div>
+        <div class="date">
+          <p id="date-text">Select Date:</p>
+          <input type="date" name="datepicker" id="datepicker" />
+        </div>
       </section>
       <section id="log">
         <div class="row header">
@@ -130,7 +98,7 @@
       font-size: large;
     }
 
-    .active {
+    .btn.active {
       background-color: var(--c-btn-active);
     }
 
@@ -138,6 +106,17 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
+    }
+
+    #date-text {
+      font-weight: 700;
+      font-size: x-large;
+    }
+
+    #datepicker {
+      margin-left: 1rem;
+
+      font-size: larger;
     }
 
     #log {
@@ -198,6 +177,7 @@
     }
 
     .header {
+      display: flex !important;
       width: calc(100% + 4px) !important;
       background-color: var(--c-header-background);
       border: unset !important;
@@ -205,10 +185,10 @@
 
     .row {
       width: 100%;
+      display: none;
 
       padding: 0 10px;
 
-      display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
 
@@ -239,8 +219,8 @@
       background-color: var(--c-t-fatal);
     }
 
-    .hide {
-      display: none !important;
+    #log > .active {
+      display: flex !important;
     }
   </style>
 </html>
