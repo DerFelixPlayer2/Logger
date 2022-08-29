@@ -1,6 +1,6 @@
 name = "logger"
 workers_dev = true
-compatibility_date = "2022-08-28"
+compatibility_date = "2022-08-29"
 main = "build/index.ts"
 
 kv_namespaces = [ 
