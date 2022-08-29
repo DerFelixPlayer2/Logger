@@ -4,13 +4,16 @@ var fs = require('fs')
 var srcPath = path.join(__dirname, '..', 'src')
 var destPath = path.join(__dirname, '..', 'build')
 var htmlPath = path.join(srcPath, 'index.html')
+var htmlScriptPath = path.join(srcPath, 'index.html.js')
 if (!fs.existsSync(destPath)) {
   fs.mkdirSync(destPath)
 }
 
 var files = fs.readdirSync(srcPath)
+var htmlScript = fs.readFileSync(htmlScriptPath, 'utf8')
 var html = fs
   .readFileSync(htmlPath, 'utf8')
+  .replace("'INSERT HTML SCRIPT HERE'", htmlScript)
   .replace(/`/g, '\\`')
   .replace(/\${/g, '\\${')
 
