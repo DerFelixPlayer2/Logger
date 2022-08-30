@@ -7,5 +7,9 @@ kv_namespaces = [
   { binding = "Logger", id = "f56e70cbf0b04a839eb209f4cde339e7", preview_id = "6cf19026fc4b460eb21de397b269f01d" }
 ]
 
+[vars]
+# The necessary secrets are:
+# - CAUTH_TOKEN
+
 [build]
 command = "npm install && npm run build"
