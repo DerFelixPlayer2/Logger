@@ -27,10 +27,6 @@ async function validate(req: Request): Promise<Response | CheckedRequest> {
     return new Response('only POST request are supported', { status: 405, headers: { 'Allow': 'POST, GET' } });
   }
 
-  if (req.headers.get("cauth") !== CAUTH_TOKEN) {
-    return new Response('unauthorized', { status: 401 });
-  }
-
   if (!req.body) {
     return new Response('request body is empty', { status: 400 })
   }
